@@ -84,8 +84,16 @@ class Webcam:
                 filepath = destination / f"{timestamp}.png"
                 cv2.imwrite(str(filepath), frame)
                 n_captures += 1
+            else:
+                logging.info(f"Finished after reaching {max_captures} captures")
+        except KeyboardInterrupt:
+            logging.info(f"Capturing stopped manually by user")
+            raise
         except Exception as ex:
             logging.error(f"Unexpected error during repeated capture: {ex}")
+            raise
+        except:
+            logging.error(f"Unexpected error during repeated capture")
             raise
 
     def preview(self):
