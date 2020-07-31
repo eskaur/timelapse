@@ -1,8 +1,10 @@
+"""Module for creating time-lapse videos based on captured images"""
+
 import datetime
 from pathlib import Path
 
-import cv2
 import numpy as np
+import cv2
 
 from .common import DEFAULT_TIME_FORMAT
 
@@ -44,7 +46,7 @@ def _add_stamp(image: np.ndarray, stamp: str, color: tuple = (0, 0, 255)):
 
 def create_timelapse(source: Path, fps: int, source_filetype: str = "png") -> Path:
     """Create time-lapse video based on source directory with time stamped images
-    
+
     Video file will be saved to the source directory.
 
     Arguments:

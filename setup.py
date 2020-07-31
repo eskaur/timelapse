@@ -1,7 +1,9 @@
+"""Settings for building and installing package"""
+
 import setuptools
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONG_DESCRIPTION = fh.read()
 
 setuptools.setup(
     name="timelapse",
@@ -9,7 +11,7 @@ setuptools.setup(
     author="Eskil Aursand",
     author_email="eskil.aursand@gmail.com",
     description="A small time-lapse creation library",
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/eskaur/timelapse",
     packages=setuptools.find_packages(),

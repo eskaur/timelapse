@@ -1,3 +1,5 @@
+"""Module for capturing images to be used for time-lapse videos"""
+
 import datetime
 import logging
 from pathlib import Path
@@ -43,7 +45,7 @@ class Webcam:
         """Perform repeated capture and save image files to directory
 
         Will log to file in the destination directory
-        
+
         Arguments:
             interval        Pause between each capture
             destination     Destination directory (will create if it does not exist)
@@ -76,25 +78,24 @@ class Webcam:
                 time.sleep(interval.total_seconds())
                 try:
                     frame = self.capture()
-                    logging.debug(f"Successful capture ({n_captures})")
-                except Exception as ex:
-                    logging.warning(f"Capture failed: {ex}")
+                    logging.debug("Successful capture (%s)", n_captures)
+                except Exception as ex:  # pylint: disable=broad-except
+                    logging.warning("Capture failed: %s", ex)
                     continue
                 timestamp = datetime.datetime.now().strftime(DEFAULT_TIME_FORMAT)
                 filepath = destination / f"{timestamp}.png"
                 cv2.imwrite(str(filepath), frame)
                 n_captures += 1
-            else:
-                logging.info(f"Finished after reaching {max_captures} captures")
         except KeyboardInterrupt:
-            logging.info(f"Capturing stopped manually by user")
+            logging.info("Capturing stopped manually by user")
             raise
         except Exception as ex:
-            logging.error(f"Unexpected error during repeated capture: {ex}")
+            logging.error("Unexpected error during repeated capture: %s", ex)
             raise
         except:
-            logging.error(f"Unexpected error during repeated capture")
+            logging.error("Unexpected error during repeated capture")
             raise
+        logging.info("Finished after reaching %s captures", max_captures)
 
     def preview(self):
         """Test capture and show in OpenCV window"""
