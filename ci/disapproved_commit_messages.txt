@@ -1,0 +1,56 @@
+Header-only is not allowed (ERROR)
+************************************************************************
+A message much have at least three lines (ERROR BELOW)
+
+************************************************************************
+This is a header
+The second line must be empty (ERROR)
+
+This is the body of the commit message.
+************************************************************************
+This is a header
+
+
+The third line is not allowed to be empty. (ERROR ABOVE)
+************************************************************************
+This is a header
+
+This is the body of the commit message.
+The last line is not allowed to be empty. (ERROR BELOW)
+
+************************************************************************
+This is a header with trailing whitespace (ERROR) 
+
+This is the body of the commit message.
+************************************************************************
+This is a header
+
+This is a body with trailing whitespace (ERROR) 
+************************************************************************
+This is a header that is too long. It just goes on and on; quite inappropriate. (ERROR)
+
+This is the body of the commit message.
+************************************************************************
+This is a header
+
+This is a body that is too long. It just goes on and on; quite inappropriate. (ERROR)
+************************************************************************
+fixup! Original commit header (ERROR)
+
+This is the body of the commit message.
+************************************************************************
+This is a header
+
+```
+Anything is allowed inside a block like this.
+fixup! Some commend about a fixup
+```
+But not after the block is exited: fixup! (ERROR)
+************************************************************************
+this header does not use Sentence case (ERROR)
+
+This is the body of the commit message.
+************************************************************************
+This header ends with a period (ERROR).
+
+This is the body of the commit message.
