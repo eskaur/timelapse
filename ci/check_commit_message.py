@@ -86,21 +86,13 @@ def check_message(message: str) -> None:
         print("OK")
 
 
-def _main() -> None:
+def test_commit_messages_from_github_env():
+    """Test all commit messages based on Github context"""
+
     print("-" * 70)
     print("Entering commit message checker")
     messages = _get_commit_messages_from_github_env()
     print(f"Found {len(messages)} commit message(s) to check.")
 
-    try:
-        for message in messages:
-            check_message(message)
-    except LintingError as ex:
-        print("*" * 70)
-        print(str(ex))
-        print("*" * 70)
-        sys.exit("Linting failed!")
-
-
-if __name__ == "__main__":
-    _main()
+    for message in messages:
+        check_message(message)
