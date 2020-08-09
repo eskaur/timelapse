@@ -15,4 +15,4 @@ jobs:
     - name: Check commit message
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: python ./.github/check_commit_message.py
+      run: python ./ci/check_commit_message.py
