@@ -63,8 +63,11 @@ def _check_line(line: str, rule: Dict) -> None:
         )
 
 
-def _check_message(message: str) -> None:
+def check_message(message: str) -> None:
+    """Check commit message according to rules
 
+    Will raise LintingError if the message is to approved.
+    """
     print("-" * 70)
     print("Checking the following commit message:")
     print("-" * 70)
@@ -91,7 +94,7 @@ def _main() -> None:
 
     try:
         for message in messages:
-            _check_message(message)
+            check_message(message)
     except LintingError as ex:
         print("*" * 70)
         print(str(ex))
