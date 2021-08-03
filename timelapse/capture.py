@@ -2,113 +2,69 @@
 
 import datetime
 import logging
-from pathlib import Path
 import time
+from pathlib import Path
 
-import numpy as np
 import cv2
 
-from .common import DEFAULT_TIME_FORMAT
+from timelapse.camera import Camera
+from timelapse.common import DEFAULT_TIME_FORMAT
 
 
-class Webcam:
-    """Class representing a webcam"""
+_logger = logging.getLogger(__name__)
 
-    def __init__(self, device_id: int = 0):
-        """Initialize webcam
 
-        Arguments:
-            device_id    Device to connect to
-        """
-        self.camera = cv2.VideoCapture(device_id)
-        if not self.camera.isOpened:
-            raise RuntimeError("Failed to open camera")
+def repeated_capture(
+    camera: Camera,
+    interval: datetime.timedelta,
+    destination: Path,
+    max_captures: int = 10000,
+    append: bool = False,
+):
+    """Perform repeated capture and save image files to directory
 
-    def capture(self) -> np.ndarray:
-        """Capture a single color frame
+    Will log to file in the destination directory
 
-        Returns:
-            Numpy array with image color data [H,W,3]
-        """
-        is_success, frame = self.camera.read()
-        if not is_success:
-            raise RuntimeError("Failed to capture frame")
-        return frame
+    Arguments:
+        camera          timelapse.Camera to use when capturing images
+        interval        Pause between each capture
+        destination     Destination directory (will create if it does not exist)
+        max_captures    Maximum number of captures before automatically stopping
+        append          Allow appending to directory with existing content
+    """
+    _logger.info("Starting timelapse loop with directory: %s", destination)
 
-    def repeated_capture(
-        self,
-        interval: datetime.timedelta,
-        destination: Path,
-        max_captures: int = 10000,
-        append: bool = False,
-    ):
-        """Perform repeated capture and save image files to directory
+    if destination.is_file():
+        raise RuntimeError(f"Destination is a file: {destination}")
+    if destination.is_dir():
+        if list(destination.glob("*")) and not append:
+            raise RuntimeError(f"Destination is not empty: {destination}")
+        _logger.info("Directory already exists.")
+    else:
+        _logger.info("Directory does not exist. Creating.")
+        destination.mkdir(parents=True)
 
-        Will log to file in the destination directory
+    try:
+        for _ in range(max_captures):
+            time.sleep(interval.total_seconds())
+            try:
+                image = camera.capture()
+            except Exception as ex:  # pylint: disable=broad-except
+                _logger.warning("Capture failed: %s", ex)
+                continue
 
-        Arguments:
-            interval        Pause between each capture
-            destination     Destination directory (will create if it does not exist)
-            max_captures    Maximum number of captures before automatically stopping
-            append          Allow appending to directory with existing content
-        """
-        if destination.is_file():
-            raise RuntimeError(f"Destination is a file: {destination}")
-        if destination.is_dir():
-            if list(destination.glob("*")) and not append:
-                raise RuntimeError(f"Destination is not empty: {destination}")
-        else:
-            print(f"Creating directory: {destination}")
-            destination.mkdir(parents=True)
+            timestamp = datetime.datetime.now().strftime(DEFAULT_TIME_FORMAT)
+            filepath = destination / f"{timestamp}.png"
+            cv2.imwrite(str(filepath), image)
 
-        # Set up logging
-        logging.basicConfig(
-            level=logging.DEBUG,
-            filename=destination / "capture.log",
-            format="%(asctime)s - %(levelname)10s - %(message)s",
-        )
-        logging.info("Logger configured")
+    except KeyboardInterrupt:
+        _logger.info("Capturing stopped manually by user")
+        raise
+    except Exception as ex:
+        _logger.error("Unexpected error during repeated capture: %s", ex)
+        raise
+    except:
+        _logger.error("Unexpected error during repeated capture")
+        raise
 
-        # Start capturing
-        logging.info("Performing camera warmup ")
-        self._warmup()
-        n_captures = 0
-        try:
-            while n_captures < max_captures:
-                time.sleep(interval.total_seconds())
-                try:
-                    frame = self.capture()
-                    logging.debug("Successful capture (%s)", n_captures)
-                except Exception as ex:  # pylint: disable=broad-except
-                    logging.warning("Capture failed: %s", ex)
-                    continue
-                timestamp = datetime.datetime.now().strftime(DEFAULT_TIME_FORMAT)
-                filepath = destination / f"{timestamp}.png"
-                cv2.imwrite(str(filepath), frame)
-                n_captures += 1
-        except KeyboardInterrupt:
-            logging.info("Capturing stopped manually by user")
-            raise
-        except Exception as ex:
-            logging.error("Unexpected error during repeated capture: %s", ex)
-            raise
-        except:
-            logging.error("Unexpected error during repeated capture")
-            raise
-        logging.info("Finished after reaching %s captures", max_captures)
-
-    def preview(self):
-        """Test capture and show in OpenCV window"""
-        frame = self.capture()
-        cv2.imshow("Preview: Press any key to exit", frame)
-        cv2.waitKey()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        print("Releasing camera resource")
-        self.camera.release()
-
-    def _warmup(self):
-        self.capture()
+    _logger.info("Finished automatically after reaching %s captures", max_captures)
