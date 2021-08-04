@@ -40,7 +40,7 @@ def repeated_capture(
     camera: Camera,
     interval: datetime.timedelta,
     destination: Path,
-    max_captures: int = 10000,
+    max_captures: int = 100000,
     append: bool = False,
 ):
     """Perform repeated capture and save image files to directory
@@ -65,7 +65,7 @@ def repeated_capture(
     if destination.is_dir():
         if list(destination.glob("*")) and not append:
             raise RuntimeError(f"Destination is not empty: {destination}")
-        _logger.info("Directory already exists.")
+        _logger.info("Directory already exists, but is empty.")
     else:
         _logger.info("Directory does not exist. Creating.")
         destination.mkdir(parents=True)
