@@ -1,7 +1,11 @@
 # timelapse
+[![Build Status][ci-badge]][ci-url]
+
 Python library for creating time-lapse videos.
 
-[![Build Status][ci-badge]][ci-url]
+Example: Lettuce growing for one day, imaged every ten minutes and played back at 24 FPS.
+![demo gif](docs/demo.gif)
+
 
 ---
 
@@ -17,6 +21,7 @@ python -m pip install ./timelapse
 If you plan to make changes to the library itself, consider 
 adding `--editable` to the install command.
 
+---
 
 ## Capturing timelapse images
 Create a directory for storing captured images, e.g.:
@@ -29,6 +34,8 @@ python -m timelapse.launch --destination ./my-timelapse-images/ --interval-minut
 ```
 In this example, it will capture one image every five minutes. A log file will be created
 in a directory called `logs` under the current working directory.
+
+---
 
 ## Creating a timelapse video
 Given that the images were stored in the directory used in the example above,
