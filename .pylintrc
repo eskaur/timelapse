@@ -3,3 +3,5 @@ extension-pkg-whitelist=cv2
 
 [MESSAGES CONTROL]
 disable=bad-continuation, ### Disabled because in conflict with black
+        too-many-arguments,
+        too-many-locals,
